@@ -4,7 +4,7 @@
 Analyzing real e-commerce transaction data to identify customer segments and quantify revenue at risk from customer churn. The goal is to answer a practical business question: which customers should the business prioritize retaining, and what's the financial case for doing so?
 
 ## Dataset
-Online Retail II (UCI Machine Learning Repository) — real transactions from a UK-based online gift retailer, December 2009 to December 2011.
+Online Retail II (UCI Machine Learning Repository), real transactions from a UK-based online gift retailer, December 2009 to December 2011.
 Source: https://archive.ics.uci.edu/dataset/502/online+retail+ii
 
 ## Tools
