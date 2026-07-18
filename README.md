@@ -12,7 +12,7 @@ Python (Pandas, NumPy), SQL (SQLite), Power BI
 
 ## Progress
 - [x] Data cleaning (`01_data_cleaning.ipynb`)
-- [ ] SQL analysis
+- [x] SQL analysis(`02_sql_analysis.ipynb`)
 - [ ] RFM segmentation
 - [ ] Cancellation rate analysis
 - [ ] Revenue-at-risk quantification
