@@ -14,7 +14,7 @@ Python (Pandas, NumPy), SQL (SQLite), Power BI
 - [x] Data cleaning (`01_data_cleaning.ipynb`)
 - [x] SQL analysis(`02_sql_analysis.ipynb`)
 - [x] RFM segmentation(`03_rfm_segmentation.ipynb`)
-- [x] Cancellation rate analysis
+- [x] Cancellation rate analysis(`04_cancellation_analysis.ipynb`)
 - [x] Revenue-at-risk quantification(`03_rfm_segmentation.ipynb`)
 - [x] Power BI dashboard
 
@@ -27,6 +27,6 @@ high prices (up to £10,953 for a single line item) all turned out to be tagged 
 -Layered a cancellation rate on top of the RFM segments and found something counter-intuitive: Champions have the *highest* cancellation rate of all 5 segments (14.8%), not the lowest. It turns out cancellation rate tracks almost exactly with purchase frequency, not customer value — customers who order 10+ times just have more chances to cancel something along the way. Flagged 37% of Champions (407 of 1,105) as less reliable than their segment alone suggests, using a `true_champion` flag (cancellation rate under 20%).
 
 ## Dashboard 
-[Page 1](rfm_dashboard_page1.png) 
-[Page 2](rfm_dashboard_page2.png) 
-[Page 3](rfm_dashboard_page3.png) 
+![Page 1](rfm_dashboard_page1.png)
+![Page 2](rfm_dashboard_page2.png)
+![Page 3](rfm_dashboard_page3.png)
