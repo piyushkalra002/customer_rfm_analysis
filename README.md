@@ -37,6 +37,7 @@ high prices (up to £10,953 for a single line item) all turned out to be tagged 
 ## 🚀 Live Streamlit Application (`app.py`)
 
 This repository includes an interactive live Streamlit web dashboard for customer retention and RFM analytics.
+https://customerrfmanalysis-umf37ukgkgvsy2xdpqlzsa.streamlit.app/#return-on-investment-89-9x
 
 ### Features
 - **Executive Overview**: Headline KPIs, customer segment distribution, and revenue breakdown.
