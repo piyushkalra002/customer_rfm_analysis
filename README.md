@@ -1,175 +1,52 @@
-# Customer RFM Analytics & Retention Dashboard
+# Customer Retention & RFM Analysis
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://streamlit.io/)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![Pandas](https://img.shields.io/badge/Pandas-ETL%20Engine-orange.svg)](https://pandas.pydata.org/)
-[![Plotly](https://img.shields.io/badge/Plotly-Interactive%20Data%20Viz-brightgreen.svg)](https://plotly.com/)
+## Overview
+Analyzing real e-commerce transaction data to identify customer segments and quantify revenue at risk from customer churn. The goal is to answer a practical business question: which customers should the business prioritize retaining, and what's the financial case for doing so?
 
-An end-to-end, reproducible **Customer Analytics & Data Engineering Pipeline** powering a live **Streamlit Dashboard**. Built for **Xeno's AI Native Data Analyst Internship Application**.
+## Dataset
+Online Retail II (UCI Machine Learning Repository), real transactions from a UK-based online gift retailer, December 2009 to December 2011.
+Source: https://archive.ics.uci.edu/dataset/502/online+retail+ii
 
----
+## Tools
+Python (Pandas, NumPy), SQL (SQLite), Power BI, Streamlit
 
-## 📌 Executive Summary & Business Context
+## Progress
+- [x] Data cleaning (`01_data_cleaning.ipynb`)
+- [x] SQL analysis(`02_sql_analysis.ipynb`)
+- [x] RFM segmentation(`03_rfm_segmentation.ipynb`)
+- [x] Cancellation rate analysis(`04_cancellation_analysis.ipynb`)
+- [x] Revenue-at-risk quantification(`03_rfm_segmentation.ipynb`)
+- [x] Power BI dashboard
+- [x] Live Streamlit Application (`app.py`)
 
-This project converts transaction data from the **Online Retail II** dataset (UK-based online gift retailer) into actionable customer retention strategies. Standard transactional reporting often ignores hidden customer churn and order cancellation behavior. This application builds a 5-quantile **RFM (Recency, Frequency, Monetary)** model coupled with an independent **Order Cancellation Engine** to identify high-value accounts at risk of churning and quantify the return on investment (ROI) of targeted retention campaigns.
+## Key Findings So Far
+-Started with 525,461 raw transaction rows. After removing cancelled orders, internal adjustment entries, transactions with no customer ID attached, and duplicate rows, I was left with 400,526 genuine customer purchases to actually work with.
 
-### Key Business Highlights
-- **Total Revenue**: **£8.70M** (£8,699,701.75) generated across **4,300 distinct customers** and **400,526 cleaned transactions**.
-- **Pareto Concentration**: The top **25.7% of customers (Champions)** generate **66.7% (£5.80M)** of total revenue.
-- **At-Risk Opportunity**: **697 customers (£1.03M / 11.8% of revenue)** are categorized as **At Risk**. Crucially, their average historical spend (**£1,471.84**) is virtually identical to current **Loyal customers (£1,471.74)**—proving these are high-value accounts experiencing friction rather than low-value shoppers drifting away.
-- **Cancellation Masking Effect**: **36.8% of Champions (407 customers)** have order cancellation rates exceeding **20%**, masking operational dissatisfaction under high completed purchase metrics.
-- **Targeted Campaign ROI**: Reaching out to the **top 30% of At-Risk accounts by spend** delivers an **89.9x ROI** (£95.0K recovered revenue vs £1.0K cost), outperforming a blanket campaign (**30.8x ROI**) by **2.9x in capital efficiency**.
+-A couple of things worth flagging along the way: some of the "negative quantity" rows turned out to be internal warehouse notes damaged stock, lost items  rather than customer returns, with no customer ID attached to any of them. Separately, a batch of unusually
+high prices (up to £10,953 for a single line item) all turned out to be tagged under a special "Manual" stock code  internal adjustment charges, not real product sales. Both were investigated before being excluded, rather than assumed to be errors and dropped outright.
 
----
+-Layered a cancellation rate on top of the RFM segments and found something counter-intuitive: Champions have the *highest* cancellation rate of all 5 segments (14.8%), not the lowest. It turns out cancellation rate tracks almost exactly with purchase frequency, not customer value — customers who order 10+ times just have more chances to cancel something along the way. Flagged 37% of Champions (407 of 1,105) as less reliable than their segment alone suggests, using a `true_champion` flag (cancellation rate under 20%).
 
-## 🛠️ ETL Pipeline Architecture
-
-The application relies on a modular, reproducible ETL pipeline (`src/etl.py`) that pre-processes raw data offline and outputs optimized Parquet datasets for instantaneous Streamlit page loads:
-
-```
-                  ┌───────────────────────────────┐
-                  │   Raw Online Retail II Data   │
-                  │   (online_retail_II.xlsx)     │
-                  └──────────────┬────────────────┘
-                                 │
-                                 ▼
-┌───────────────────────────────────────────────────────────────────┐
-│                     EXTRACT & TRANSFORM ENGINE                    │
-│                                                                   │
-│ 1. Data Cleaning:                                                 │
-│    • Remove Invoices starting with 'C' (Cancelled) and 'A'        │
-│    • Drop null Customer IDs & exact duplicates                    │
-│    • Exclude Manual stock code outliers ('M')                     │
-│    • Calculate order_value = Quantity * Price                     │
-│                                                                   │
-│ 2. Cancellation Analysis:                                         │
-│    • Extract cancelled invoices, compute per-customer cancel rate  │
-│                                                                   │
-│ 3. RFM Engine & Quantile Scoring:                                 │
-│    • Calculate Recency (days), Frequency (orders), Monetary (£)  │
-│    • Apply 5-quantile qcut scoring for R, F, M                    │
-│    • Map segments: Champions, Loyal, At Risk, Lost, Potential     │
-│    • Flag True Champions (Champions with cancel rate < 20%)       │
-└────────────────────────────────┬──────────────────────────────────┘
-                                 │
-                                 ▼
-                  ┌───────────────────────────────┐
-                  │      LOAD: PARQUET STORAGE    │
-                  │  • rfm_processed.parquet      │
-                  │  • transactions_summary.parquet│
-                  └──────────────┬────────────────┘
-                                 │
-                                 ▼
-                  ┌───────────────────────────────┐
-                  │      STREAMLIT DASHBOARD      │
-                  │   (app.py - cached @st.cache) │
-                  └───────────────────────────────┘
-```
+## Dashboard 
+![Page 1](rfm_dashboard_page1.png)
+![Page 2](rfm_dashboard_page2.png)
+![Page 3](rfm_dashboard_page3.png)
 
 ---
 
-## 📊 Validated Metric Benchmarks (Notebook Exact Match)
+## 🚀 Live Streamlit Application (`app.py`)
 
-The ETL pipeline outputs were validated against the original exploratory notebooks (`01_data_cleaning.ipynb` through `04_cancellation_analysis.ipynb`):
+This repository includes an interactive live Streamlit web dashboard built for **Xeno's AI Native Data Analyst Internship Application**.
 
-| Metric | Notebook Value | Pipeline Output | Validation Status |
-| :--- | :--- | :--- | :--- |
-| **Clean Transactions** | 400,526 | 400,526 | ✅ Exact Match |
-| **Unique Customers** | 4,300 | 4,300 | ✅ Exact Match |
-| **Total Monetary Revenue** | £8,699,701.75 | £8,699,701.75 | ✅ Exact Match |
-| **Champions Count / Revenue** | 1,105 / £5,804,350.51 | 1,105 / £5,804,350.51 | ✅ Exact Match |
-| **Loyal Count / Revenue** | 778 / £1,145,016.01 | 778 / £1,145,016.01 | ✅ Exact Match |
-| **At Risk Count / Revenue** | 697 / £1,025,870.13 | 697 / £1,025,870.13 | ✅ Exact Match |
-| **Lost Count / Revenue** | 1,022 / £396,594.50 | 1,022 / £396,594.50 | ✅ Exact Match |
-| **Potential Count / Revenue** | 698 / £327,870.60 | 698 / £327,870.60 | ✅ Exact Match |
-| **True Champions Count** | 698 | 698 | ✅ Exact Match |
-| **Targeted Campaign ROI** | 89.9x | 89.9x | ✅ Exact Match |
+### Features
+- **Executive Overview**: Headline KPIs, customer segment distribution, and revenue breakdown.
+- **RFM Segmentation Engine**: 5-quantile RFM scoring, interactive sliders, and 3D customer scatter plot.
+- **Retention & Cancellation Analysis**: At-Risk revenue breakdown, True Champion filtering, and priority contact list.
+- **Business Insights & Win-Back ROI Simulator**: Financial ROI comparison (Targeted **89.9x ROI** vs Blanket **30.8x ROI**) with live sensitivity calculator.
 
----
-
-## 📁 Repository Structure
-
-```
-customer_rfm_analysis/
-├── .streamlit/
-│   └── config.toml             # Custom dashboard theme
-├── data/
-│   ├── raw/                    # Raw Online Retail II dataset
-│   └── processed/              # Processed Parquet/CSV data
-│       ├── rfm_processed.parquet
-│       ├── transactions_summary.parquet
-│       ├── monthly_trends.csv
-│       └── country_revenue.csv
-├── notebooks/                  # Preserved exploratory Jupyter Notebooks
-│   ├── 01_data_cleaning.ipynb
-│   ├── 02_sql_analysis.ipynb
-│   ├── 03_rfm_segmentation.ipynb
-│   └── 04_cancellation_analysis.ipynb
-├── src/
-│   ├── __init__.py
-│   ├── etl.py                  # Standalone ETL Script
-│   └── utils.py                # Data cached loaders & ROI calculation helpers
-├── app.py                      # Main Streamlit Dashboard Application
-├── requirements.txt            # Python dependencies
-└── README.md                   # Project documentation
-```
-
----
-
-## 💻 Local Setup & Execution Guide
-
-Follow these steps to run the ETL pipeline and launch the Streamlit application locally:
-
-### 1. Clone Repository & Setup Virtual Environment
-```bash
-git clone https://github.com/YOUR_USERNAME/customer_rfm_analysis.git
-cd customer_rfm_analysis
-
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 2. Install Dependencies
+### Running Locally
 ```bash
 pip install -r requirements.txt
-```
-
-### 3. Run the ETL Pipeline
-To execute data extraction, transformation, RFM quantile scoring, and Parquet dataset generation:
-```bash
 python src/etl.py
-```
-
-### 4. Launch Streamlit Application
-```bash
 streamlit run app.py
 ```
-The dashboard will open automatically in your browser at `http://localhost:8501`.
-
----
-
-## ☁️ Deploying to Streamlit Community Cloud
-
-To deploy this project live on **Streamlit Community Cloud** (`streamlit.app`):
-
-1. Push this repository to your GitHub account:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Customer RFM Analytics Live App"
-   git remote add origin https://github.com/YOUR_USERNAME/customer_rfm_analysis.git
-   git branch -M main
-   git push -u origin main
-   ```
-2. Log into [share.streamlit.io](https://share.streamlit.io/) with your GitHub account.
-3. Click **"New app"**.
-4. Select your repository (`YOUR_USERNAME/customer_rfm_analysis`), branch (`main`), and set Main file path to `app.py`.
-5. Click **"Deploy!"**. Your live dashboard link will be generated instantly.
-
----
-
-## 👨‍💻 Candidate Information
-
-- **Role Applied**: AI Native Data Analyst Intern
-- **Company**: Xeno
-- **Author**: Piyush Kalra
