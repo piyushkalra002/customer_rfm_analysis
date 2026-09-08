@@ -1,6 +1,5 @@
 """
 Customer RFM Analytics Dashboard - Live Streamlit Application
-Job Application for Xeno's AI Native Data Analyst Internship
 """
 
 import sys
@@ -24,7 +23,7 @@ from src.utils import (
 
 # Set Streamlit Page Configuration
 st.set_page_config(
-    page_title="Customer RFM & Retention Analytics | Xeno AI Native Data Analyst",
+    page_title="Customer RFM & Retention Analytics Dashboard",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -112,8 +111,8 @@ navigation = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🏆 Candidate Submission")
-st.sidebar.info("**Role:** AI Native Data Analyst Intern\n\n**Company:** Xeno\n\n**Methodology:** Exact Notebook ETL Match")
+st.sidebar.markdown("### 🏆 Dashboard Overview")
+st.sidebar.info("**Project:** Customer RFM & Retention Analytics\n\n**Methodology:** Reproducible ETL & Quantile Segmentation")
 
 # --- HEADER AREA ---
 st.markdown('<div class="main-title">Customer RFM & Retention Analytics Dashboard</div>', unsafe_allow_html=True)
@@ -572,4 +571,4 @@ elif navigation == "📈 Win-Back ROI Recommendation":
 
 # --- FOOTER ---
 st.markdown("---")
-st.caption("⚡ Live Customer RFM Analytics Engine | Created for Xeno's AI Native Data Analyst Internship Application")
+st.caption("⚡ Live Customer RFM Analytics Engine | Reproducible Data Analytics & Customer Segmentation Dashboard")
